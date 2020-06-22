@@ -1,5 +1,5 @@
 #[cfg(test)]
-use mockall::{predicate::*};   
+use mockall::{predicate::*};
 
 #[cfg(test)]
 use yaml_rust::{YamlLoader, YamlEmitter};
@@ -60,7 +60,33 @@ bar:
     println!("{}", out_str);
 }
 
+mod models;
+mod finders;
+
+struct App<'a, T:finders::SpecFinder>{
+    spec_finder: &'a T
+}
+
+impl<'a,T:finders::SpecFinder> App<'a,T>{
+    fn execute(&self) -> i32{
+        return self.spec_finder.find().len() as i32;
+    }
+}
+
+#[test]
+fn test_app_returns_number_of_specs_found() {
+    let mut mock_spec_finder = finders::MockSpecFinder::new();
+    &mock_spec_finder.expect_find()
+        .times(1)
+        .returning(| | vec![models::Spec{}]);
+
+    let app = App{
+        spec_finder: &mock_spec_finder,
+    };
+    
+    assert_eq!(1, app.execute())
+}
+
 fn main() {
     println!("Hello, world!");
 }
-
