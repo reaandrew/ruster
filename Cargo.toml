@@ -9,4 +9,5 @@ edition = "2018"
 [dependencies]
 mockall = "0.7.1"
 yaml-rust = "0.4"
+tempfile = "3.1.0"
 

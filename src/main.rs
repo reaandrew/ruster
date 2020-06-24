@@ -69,7 +69,14 @@ struct App<'a, T:finders::SpecFinder>{
 
 impl<'a,T:finders::SpecFinder> App<'a,T>{
     fn execute(&self) -> i32{
-        return self.spec_finder.find().len() as i32;
+        match self.spec_finder.find(){
+            Ok(specs) => {
+                return specs.len() as i32;
+            },
+            Err(_) => {
+                1
+            }
+        }
     }
 }
 
@@ -78,12 +85,14 @@ fn test_app_returns_number_of_specs_found() {
     let mut mock_spec_finder = finders::MockSpecFinder::new();
     &mock_spec_finder.expect_find()
         .times(1)
-        .returning(| | vec![models::Spec{}]);
+        .returning(| | Ok(vec![models::Spec{
+            url: String::from(""),
+        }]));
 
     let app = App{
         spec_finder: &mock_spec_finder,
     };
-    
+
     assert_eq!(1, app.execute())
 }
 
