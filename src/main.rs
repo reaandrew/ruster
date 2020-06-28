@@ -12,6 +12,6 @@ fn main() -> Result<(), std::io::Error> {
     let app = app::App{
         spec_finder: &spec_finder,
     };
-    app.execute(); 
+    app.execute()?; 
     return Ok(());
 }
