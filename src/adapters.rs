@@ -15,6 +15,7 @@ impl SpecFileAdapter{
         let doc = &docs[0];
         return Ok(models::Spec{
             url: String::from(doc["url"].as_str().unwrap()),
+            spec_type: models::SpecType::HTTP,
         });
     }
 }

@@ -3,8 +3,9 @@ use super::models;
 
 use super::finders;
 
-pub struct App<'a, T:finders::SpecFinder>{
-    pub spec_finder: &'a T
+pub struct App<'a, 
+    FINDER:finders::SpecFinder>{
+    pub spec_finder: &'a FINDER
 }
 
 impl<'a,T:finders::SpecFinder> App<'a,T>{
@@ -21,6 +22,7 @@ fn test_app_returns_number_of_specs_found() -> Result<(), std::io::Error> {
         .times(1)
         .returning(| | Ok(vec![models::Spec{
             url: String::from(""),
+            spec_type: models::SpecType::HTTP,
         }]));
 
     let app = App{
