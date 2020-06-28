@@ -22,7 +22,7 @@ fn test_file_spec_finder_finds_spec_files()-> Result<(), std::io::Error>{
 }
 
 pub struct FileSpecFinder{
-    path: String,
+    pub path: String,
 }
 
 impl SpecFinder for FileSpecFinder{
