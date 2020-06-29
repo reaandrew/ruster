@@ -43,6 +43,7 @@ fn test_app_returns_number_of_specs_found() -> Result<(), std::io::Error> {
             spec_type: models::SpecType::HTTP,
         }]));
 
+    //TODO: Figure out how to create and pass a MockSpecExecutor instead of a FakeExecutor
     let mut mock_executor_factory = factories::MockExecutorFactory::new();
     &mock_executor_factory.expect_create()
         .returning(|_| Ok(Box::new(FakeExecutor{})));
