@@ -1,8 +1,9 @@
 use super::models;
 use super::executors;
 
+#[cfg_attr(test, mockall::automock)]
 pub trait ExecutorFactory{
-    fn create(&self, _: &models::Spec) -> Result<Box<dyn executors::SpecExecutor>, std::io::Error>;
+    fn create(&self, spec: &models::Spec) -> Result<Box<dyn executors::SpecExecutor>, std::io::Error>;
 }
 
 pub struct DefaultExecutorFactory{
