@@ -1,4 +1,6 @@
 use std::fs::{read_dir};
+use std::fs;
+use std::io;
 
 use super::models;
 use super::adapters;
@@ -27,12 +29,31 @@ pub struct FileSpecFinder{
 
 impl SpecFinder for FileSpecFinder{
     fn find(&self) -> Result<Vec<models::Spec>, std::io::Error>{
+        println!("Finding specs");
         let adapter = adapters::SpecFileAdapter{};
         let mut result : Vec<models::Spec> = vec![];
-        for path in read_dir(&self.path)?{
-            let dir = path?;
-            result.push(adapter.adapt(dir.path().display().to_string())?)
-        }
+        println!("Self Path is {:?}", &self.path);
+
+        fs::read_dir(".")?
+            .filter(|f| match f{
+                Ok(entry) => match entry.path().extension(){
+                    Some(extension) => extension == "yml",
+                    None            => false
+                }
+                Err(_) => false,
+            })
+        .map(|res| res.map(|e| e.path()))
+            .filter_map(Result::ok)
+            .for_each(|path| {
+                match adapter.adapt(match path.to_str(){
+                    Some(path) => String::from(path),
+                    _=>String::from("")
+                }){
+                    Ok(spec) => result.push(spec),
+                    _   => ()
+                }
+            });
+
         return Ok(result);
     }
 }

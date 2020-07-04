@@ -12,6 +12,7 @@ pub struct DefaultExecutorFactory{
 
 impl ExecutorFactory for DefaultExecutorFactory {
     fn create(&self, _: &models::Spec) -> Result<Box<dyn executors::SpecExecutor>, std::io::Error>{
+        println!("creating an executor");
         Ok(Box::new(executors::HttpSpecExecutor{}))
     }
 }

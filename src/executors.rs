@@ -1,9 +1,12 @@
 use super::models;
-use super::executors;
+
+use std::collections::HashMap;
+
+pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 #[cfg_attr(test, mockall::automock)]
 pub trait SpecExecutor{
-    fn execute(&self, spec: &models::Spec) -> Result<models::SpecResult, std::io::Error>;
+    fn execute(&self, spec: &models::Spec) -> Result<models::SpecResult>;
     fn supported_spec_types(&self) -> Vec<models::SpecType>;
 }
 
@@ -12,7 +15,11 @@ pub struct HttpSpecExecutor{
 }
 
 impl SpecExecutor for HttpSpecExecutor{
-    fn execute(&self, _: &models::Spec) -> Result<models::SpecResult, std::io::Error>{
+    fn execute(&self, _: &models::Spec) -> Result<models::SpecResult>{
+        println!("executing spec");
+         let resp = reqwest::blocking::get("https://httpbin.org/ip")?
+            .json::<HashMap<String, String>>()?;
+        println!("Something {:#?}", resp);
         Ok(models::SpecResult{
             success: true,
         })
@@ -25,7 +32,7 @@ impl SpecExecutor for HttpSpecExecutor{
 }
 
 #[test]
-fn test_my_knowledge_of_mocking_traits() -> Result<(), std::io::Error>{
+fn test_my_knowledge_of_mocking_traits() -> Result<()>{
     let mut mock_spec_executor = MockSpecExecutor::new();
     &mock_spec_executor.expect_execute()
         .returning(|_| Ok(models::SpecResult{
@@ -40,9 +47,9 @@ fn test_my_knowledge_of_mocking_traits() -> Result<(), std::io::Error>{
 }
 
 #[test]
-fn test_my_knowledge_of_mocking_traits_part_2() -> Result<(), std::io::Error>{
-    fn do_something(executor: Box<dyn executors::SpecExecutor>,
-        spec: models::Spec) -> Result<(), std::io::Error>{
+fn test_my_knowledge_of_mocking_traits_part_2() -> Result<()>{
+    fn do_something(executor: Box<dyn SpecExecutor>,
+        spec: models::Spec) -> Result<()>{
         executor.execute(&spec)?;
         Ok(())
     }

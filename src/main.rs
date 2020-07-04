@@ -7,13 +7,20 @@ mod executors;
 mod app;
 
 fn main() -> Result<(), std::io::Error> {
-    let dir = std::env::current_exe()?;
+    //let dir = std::env::current_exe()?;
     let spec_finder = finders::FileSpecFinder{
-        path: dir.display().to_string(),
+        //path: dir.display().to_string(),
+        path: String::from("~"),
     };
+
+    let executor_factory = factories::DefaultExecutorFactory{};
+
+    println!("creating app");
     let app = app::App{
         spec_finder: &spec_finder,
+        executor_factory: &executor_factory
     };
+    println!("executing app");
     app.execute()?; 
     return Ok(());
 }
