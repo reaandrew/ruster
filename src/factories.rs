@@ -20,13 +20,6 @@ impl ExecutorFactory for DefaultExecutorFactory {
     }
 }
 
-pub trait AppFactory<'a, 
-    TFinder:finders::SpecFinder,
-    TExecutorFactory:ExecutorFactory>{
-    fn create(&self) -> 
-        Result<app::App<'a, TFinder,TExecutorFactory>>;
-}
-
 pub struct DefaultAppFactory<'a, 
     TFinder:finders::SpecFinder,
     TExecutorFactory:ExecutorFactory>
@@ -38,10 +31,9 @@ pub struct DefaultAppFactory<'a,
 
 impl <'a, 
     TFinder:finders::SpecFinder,
-    TExecutorFactory:ExecutorFactory> AppFactory<'a, TFinder,TExecutorFactory> for 
-    DefaultAppFactory<'a, TFinder,TExecutorFactory>{
+    TExecutorFactory:ExecutorFactory> DefaultAppFactory<'a, TFinder,TExecutorFactory>{
         
-    fn create(&self) -> Result<app::App<'a, TFinder,TExecutorFactory>>{
+    pub fn create(&self) -> Result<app::App<'a, TFinder,TExecutorFactory>>{
         let app = app::App{
             spec_finder: self.spec_finder,
             executor_factory: self.executor_factory
