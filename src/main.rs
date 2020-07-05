@@ -7,10 +7,8 @@ mod executors;
 mod app;
 
 fn main() -> Result<(), std::io::Error> {
-    //let dir = std::env::current_exe()?;
     let spec_finder = finders::FileSpecFinder{
-        //path: dir.display().to_string(),
-        path: String::from("~"),
+        path: String::from("."),
     };
 
     let executor_factory = factories::DefaultExecutorFactory{};

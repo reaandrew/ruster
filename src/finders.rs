@@ -34,7 +34,7 @@ impl SpecFinder for FileSpecFinder{
         let mut result : Vec<models::Spec> = vec![];
         println!("Self Path is {:?}", &self.path);
 
-        fs::read_dir(".")?
+        fs::read_dir(&self.path)?
             .filter(|f| match f{
                 Ok(entry) => match entry.path().extension(){
                     Some(extension) => extension == "yml",
