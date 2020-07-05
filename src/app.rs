@@ -22,7 +22,7 @@ impl<'a,
             let executor = self.executor_factory.create(spec);
             match executor{
                 Ok(executor) => {
-                    executor.execute(spec);
+                    let _ = executor.execute(spec);
                 },
                 _ => ()
             }

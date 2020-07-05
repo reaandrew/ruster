@@ -24,21 +24,31 @@ pub trait AppFactory<'a,
     TFinder:finders::SpecFinder,
     TExecutorFactory:ExecutorFactory>{
     fn create(&self) -> 
-        Result<Box<app::App<TFinder,TExecutorFactory>>>;
+        Result<app::App<'a, TFinder,TExecutorFactory>>;
 }
 
 pub struct DefaultAppFactory<'a, 
-    T:finders::SpecFinder,
-    E:ExecutorFactory>
-where T:finders::SpecFinder{
-
+    TFinder:finders::SpecFinder,
+    TExecutorFactory:ExecutorFactory>
+{
+    
+    pub spec_finder: &'a TFinder,
+    pub executor_factory: &'a TExecutorFactory
 }
 
-impl <T,E> AppFactory<T,E> for DefaultAppFactory<TFinder,TExecutorFactory>{
-    fn create(&self) -> 
-        Result<Box<app::App<TFinder,TExecutorFactory>>>{
-            
+impl <'a, 
+    TFinder:finders::SpecFinder,
+    TExecutorFactory:ExecutorFactory> AppFactory<'a, TFinder,TExecutorFactory> for 
+    DefaultAppFactory<'a, TFinder,TExecutorFactory>{
+        
+    fn create(&self) -> Result<app::App<'a, TFinder,TExecutorFactory>>{
+        let app = app::App{
+            spec_finder: self.spec_finder,
+            executor_factory: self.executor_factory
+        };
+        return Ok(app);
     }
+
 } 
 
 #[test]
