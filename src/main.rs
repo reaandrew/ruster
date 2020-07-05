@@ -6,7 +6,8 @@ mod factories;
 mod executors;
 mod app;
 mod core;
-
+  
+use crate::app::App; 
 
 fn main() -> core::Result<()> {
     let spec_finder = finders::FileSpecFinder{
