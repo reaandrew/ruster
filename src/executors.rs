@@ -1,12 +1,11 @@
 use super::models;
-
+use super::core::{Result};
 use std::collections::HashMap;
-
-pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 #[cfg_attr(test, mockall::automock)]
 pub trait SpecExecutor{
-    fn execute(&self, spec: &models::Spec) -> Result<models::SpecResult>;
+    fn execute(&self, spec: &models::Spec) -> 
+        Result<models::SpecResult>;
     fn supported_spec_types(&self) -> Vec<models::SpecType>;
 }
 

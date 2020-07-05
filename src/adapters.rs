@@ -1,7 +1,9 @@
 #[cfg(test)]
 use super::utils;
-use std::fs::{read_to_string};
+use super::core::{Result};
 use super::models;
+
+use std::fs::{read_to_string};
 use yaml_rust::{YamlLoader};
 
 pub struct SpecFileAdapter{
@@ -9,7 +11,7 @@ pub struct SpecFileAdapter{
 }
 
 impl SpecFileAdapter{
-    pub fn adapt(&self, path:String) -> Result<models::Spec, std::io::Error>{
+    pub fn adapt(&self, path:String) -> Result<models::Spec>{
         println!("adapting file");
         let contents = read_to_string(path).expect("Unable to read file");
         let docs = YamlLoader::load_from_str(&contents).expect("Could not load file");
@@ -24,8 +26,8 @@ impl SpecFileAdapter{
 }
 
 #[test]
-fn test_creating_a_spec_from_file()-> Result<(), std::io::Error>{
-    utils::create_spec_file(10, |mut result| -> Result<(),std::io::Error> {
+fn test_creating_a_spec_from_file()-> Result<()>{
+    utils::create_spec_file(10, |mut result| -> Result<()> {
         let adapter = SpecFileAdapter{};
         let spec = adapter.adapt(result.file_path.remove(1))?;
         assert_eq!(spec.url,"http://localhost/path");

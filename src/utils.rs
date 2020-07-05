@@ -9,6 +9,9 @@ use tempfile::Builder;
 use uuid::Uuid;
 
 #[cfg(test)]
+use super::core;
+
+#[cfg(test)]
 pub struct CreateSpecFileResult{
     pub directory: String,
     pub file_path: Vec<String>
@@ -16,8 +19,8 @@ pub struct CreateSpecFileResult{
 
 #[cfg(test)]
 pub fn create_spec_file<T>(count:i32, callback:T) 
-    -> Result<(), std::io::Error> where 
-    T: Fn(CreateSpecFileResult) -> Result<(),std::io::Error>{
+    -> core::Result<()> where 
+    T: Fn(CreateSpecFileResult) -> core::Result<()>{
     let dir = Builder::new().prefix("ruster").tempdir()?;
     let mut result = CreateSpecFileResult{
         directory: dir.path().display().to_string(),
