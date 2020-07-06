@@ -43,18 +43,25 @@ impl <'a,
 
 } 
 
-#[test]
-fn test_executor_factory_return_http_executor() -> Result<()>{
-    let spec = &models::Spec{
-        url: String::from("http://localhost:8000"),
-        spec_type: models::SpecType::HTTP,
-    };
-    let factory = DefaultExecutorFactory{};
-    let executor = factory.create(spec)?;
+mod tests{
 
-    let supported_types = executor.supported_spec_types();
-    assert_eq!(supported_types.len(), 1);
-    assert_eq!(supported_types[0], models::SpecType::HTTP);
-    Ok(())
+    #[cfg(test)]
+    use super::*;
+
+    #[test]
+    fn test_executor_factory_return_http_executor() -> Result<()>{
+        let spec = &models::Spec{
+            url: String::from("http://localhost:8000"),
+            data: String::from("bla"),
+            method: String::from("GET"),
+            spec_type: models::SpecType::HTTP,
+        };
+        let factory = DefaultExecutorFactory{};
+        let executor = factory.create(spec)?;
+
+        let supported_types = executor.supported_spec_types();
+        assert_eq!(supported_types.len(), 1);
+        assert_eq!(supported_types[0], models::SpecType::HTTP);
+        Ok(())
+    }
 }
-

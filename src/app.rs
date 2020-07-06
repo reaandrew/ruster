@@ -53,33 +53,40 @@ impl executors::SpecExecutor for FakeExecutor{
 }
 
 
+mod tests{
 
-#[test]
-fn test_app_returns_number_of_specs_found() -> Result<()> {
-    let mut mock_spec_finder = finders::MockSpecFinder::new();
-    &mock_spec_finder.expect_find()
-        .times(1)
-        .returning(| | Ok(vec![models::Spec{
-            url: String::from(""),
-            spec_type: models::SpecType::HTTP,
-        }]));
+    #[cfg(test)]
+    use super::*;
 
-    let mut mock_spec_executor = executors::MockSpecExecutor::new();
-    &mock_spec_executor.expect_execute()
-        .returning(|_| Ok(models::SpecResult{
-            success: true,
-        }));
+    #[test]
+    fn test_app_returns_number_of_specs_found() -> Result<()> {
+        let mut mock_spec_finder = finders::MockSpecFinder::new();
+        &mock_spec_finder.expect_find()
+            .times(1)
+            .returning(| | Ok(vec![models::Spec{
+                url: String::from(""),
+                data: String::from(""),
+                method: String::from(""),
+                spec_type: models::SpecType::HTTP,
+            }]));
 
-    //TODO: Figure out how to create and pass a MockSpecExecutor instead of a FakeExecutor
-    let mut mock_executor_factory = factories::MockExecutorFactory::new();
-    &mock_executor_factory.expect_create()
-        .returning(|_| Ok(Box::new(FakeExecutor{})));
-    let app = App{
-        spec_finder: &mock_spec_finder,
-        executor_factory: &mock_executor_factory,
-    };
+        let mut mock_spec_executor = executors::MockSpecExecutor::new();
+        &mock_spec_executor.expect_execute()
+            .returning(|_| Ok(models::SpecResult{
+                success: true,
+            }));
 
-    assert_eq!(1, app.execute()?);
-    Ok(())
+        //TODO: Figure out how to create and pass a MockSpecExecutor instead of a FakeExecutor
+        let mut mock_executor_factory = factories::MockExecutorFactory::new();
+        &mock_executor_factory.expect_create()
+            .returning(|_| Ok(Box::new(FakeExecutor{})));
+        let app = DefaultApp{
+            spec_finder: &mock_spec_finder,
+            executor_factory: &mock_executor_factory,
+        };
+
+        assert_eq!(1, app.execute()?);
+        Ok(())
+    }
+
 }
-

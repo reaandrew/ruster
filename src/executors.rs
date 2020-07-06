@@ -14,9 +14,9 @@ pub struct HttpSpecExecutor{
 }
 
 impl SpecExecutor for HttpSpecExecutor{
-    fn execute(&self, _: &models::Spec) -> Result<models::SpecResult>{
+    fn execute(&self, spec: &models::Spec) -> Result<models::SpecResult>{
         println!("executing spec");
-         let resp = reqwest::blocking::get("https://httpbin.org/ip")?
+        let resp = reqwest::blocking::get(&spec.url)?
             .json::<HashMap<String, String>>()?;
         println!("Something {:#?}", resp);
         Ok(models::SpecResult{
@@ -38,10 +38,10 @@ fn test_my_knowledge_of_mocking_traits() -> Result<()>{
             success: true,
         }));
 
-    assert_eq!(mock_spec_executor.execute(&models::Spec{
-        spec_type:models::SpecType::HTTP,
-        url: String::from("http::somewhere"),
-    })?.success, true);
+    let mut spec: models::Spec = Default::default();
+    spec.url = String::from("http://somewhere");
+
+    assert_eq!(mock_spec_executor.execute(&spec)?.success, true);
     Ok(())
 }
 
@@ -58,9 +58,9 @@ fn test_my_knowledge_of_mocking_traits_part_2() -> Result<()>{
             success: true,
         }));
 
-    do_something(Box::new(mock_spec_executor), models::Spec{
-        url: String::from("http://localhost"),
-        spec_type: models::SpecType::HTTP,
-    })?;
+    let mut spec: models::Spec = Default::default();
+    spec.url = String::from("http://somewhere");
+
+    do_something(Box::new(mock_spec_executor), spec)?;
     Ok(())
 }

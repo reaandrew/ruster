@@ -20,6 +20,14 @@ impl SpecFileAdapter{
         println!("returning spec");
         return Ok(models::Spec{
             url: String::from(doc["url"].as_str().unwrap()),
+            method: String::from(match doc["method"].as_str(){
+                Some(method) => String::from(method),
+                None       => String::from("GET")
+            }),
+            data: String::from(match doc["data"].as_str(){
+                Some(data) => String::from(data),
+                None       => String::from("")
+            }),
             spec_type: models::SpecType::HTTP,
         });
     }
