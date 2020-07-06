@@ -7,7 +7,7 @@ mod executors;
 mod app;
 mod core;
   
-use crate::app::App; 
+use self::app::App; 
 
 fn main() -> core::Result<()> {
     let spec_finder = finders::FileSpecFinder{
@@ -20,8 +20,7 @@ fn main() -> core::Result<()> {
         spec_finder: &spec_finder,
         executor_factory: &executor_factory
     };
-    let app = app_factory.create()?;
-    println!("executing app");
+    let app= app_factory.create()?;
     app.execute()?; 
     return Ok(());
 }

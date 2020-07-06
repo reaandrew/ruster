@@ -33,13 +33,12 @@ impl <'a,
     TFinder:finders::SpecFinder,
     TExecutorFactory:ExecutorFactory> DefaultAppFactory<'a, TFinder,TExecutorFactory>{
         
-    pub fn create(&'a self) -> Result<Box<dyn app::App>>{
-
+    pub fn create(&self) -> Result<impl app::App + 'a>{
         let app = app::DefaultApp{
             spec_finder: self.spec_finder,
             executor_factory: self.executor_factory
         };
-        return Ok(Box::new(app));
+        return Ok(app);
     }
 
 } 

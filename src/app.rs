@@ -4,8 +4,8 @@ use super::factories;
 use super::finders;
 use super::core::{Result};
 
-pub trait App<'a>{
-    fn execute(&'a self) -> Result<i32>;
+pub trait App{
+    fn execute(&self) -> Result<i32>;
 }
 
 pub struct DefaultApp<'a, 
@@ -17,8 +17,8 @@ pub struct DefaultApp<'a,
 
 impl<'a,
     TFinder:finders::SpecFinder,
-    TExecutorFactory:factories::ExecutorFactory> App<'a> for DefaultApp<'a,TFinder, TExecutorFactory>{
-    fn execute(&'a self) -> Result<i32>{
+    TExecutorFactory:factories::ExecutorFactory> App for DefaultApp<'a,TFinder, TExecutorFactory>{
+    fn execute(&self) -> Result<i32>{
         println!("app finding specs");
 
         let specs = self.spec_finder.find()?;
