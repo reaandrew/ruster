@@ -1,9 +1,19 @@
-#[derive(Default)]
 pub struct Spec{
     pub url: String,
     pub method: String,
     pub data: String,
     pub spec_type: SpecType,
+}
+
+impl Default for Spec {
+    fn default() -> Self { 
+        return Spec{
+            url: "".into(),
+            method: "GET".into(),
+            data: "".into(),
+            spec_type: SpecType::HTTP,
+        }
+    }
 }
 
 pub struct SpecResult{

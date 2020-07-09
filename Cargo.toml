@@ -12,3 +12,4 @@ yaml-rust = "0.4"
 tempfile = "3.1.0"
 uuid = { version = "0.8", features = ["serde", "v4"] }
 reqwest = { version = "0.10", features = ["blocking", "json"] }
+mockito = "0.26.0"
