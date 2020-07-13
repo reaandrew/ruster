@@ -3,6 +3,7 @@ use std::fs;
 use super::models;
 use super::adapters;
 use super::core;
+use super::errors::{RusterError, ErrorType};
 
 #[cfg(test)]
 use super::utils;
@@ -33,25 +34,29 @@ impl SpecFinder for FileSpecFinder{
         let mut result : Vec<models::Spec> = vec![];
         println!("Self Path is {:?}", &self.path);
 
-        fs::read_dir(&self.path)?
-            .filter(|f| match f{
-                Ok(entry) => match entry.path().extension(){
-                    Some(extension) => extension == "yml",
-                    None            => false
-                }
-                Err(_) => false,
-            })
-        .map(|res| res.map(|e| e.path()))
-            .filter_map(Result::ok)
-            .for_each(|path| {
-                match adapter.adapt(match path.to_str(){
-                    Some(path) => String::from(path),
-                    _=>String::from("")
-                }){
-                    Ok(spec) => result.push(spec),
-                    _   => ()
-                }
-            });
+        match fs::read_dir(&self.path){
+            Ok(paths) => {
+                paths.filter(|f| match f{
+                    Ok(entry) => match entry.path().extension(){
+                        Some(extension) => extension == "yml",
+                        None            => false
+                    }
+                    Err(_) => false,
+                })
+                .map(|res| res.map(|e| e.path()))
+                    .filter_map(Result::ok)
+                    .for_each(|path| {
+                        match adapter.adapt(match path.to_str(){
+                            Some(path) => String::from(path),
+                            _=>String::from("")
+                        }){
+                            Ok(spec) => result.push(spec),
+                            _   => ()
+                        }
+                    });
+            },
+            Err(_) => return Err(RusterError::Of(ErrorType::ReadingDirectory))
+        }
 
         return Ok(result);
     }

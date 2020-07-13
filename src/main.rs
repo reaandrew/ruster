@@ -6,10 +6,13 @@ mod factories;
 mod executors;
 mod app;
 mod core;
+mod errors;
   
 use self::app::App; 
 
-fn main() -> core::Result<()> {
+use self::errors::{RusterError};
+
+fn main() {
     let spec_finder = finders::FileSpecFinder{
         path: String::from("."),
     };
@@ -20,7 +23,23 @@ fn main() -> core::Result<()> {
         spec_finder: &spec_finder,
         executor_factory: &executor_factory
     };
-    let app= app_factory.create()?;
-    app.execute()?; 
-    return Ok(());
+    match app_factory.create(){
+        Ok(app) => {
+            match app.execute(){
+                Ok(result) => {
+                    println!("{}", result);
+                },
+                Err(e) => {
+                    match e {
+                        RusterError::Of(error_type) => {
+                            println!("{}", error_type);
+                        }
+                    }
+                }
+            }; 
+        },
+        Err(e) => {
+            println!("{}", e);
+        }
+    };
 }
