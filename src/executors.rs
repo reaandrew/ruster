@@ -52,6 +52,17 @@ mod tests{
 
 
     #[test]
+    fn test_spec_executor_execute_returns_method_not_supported(){
+        let executor = HttpSpecExecutor{};
+        let mut spec: models::Spec = Default::default();
+        spec.method = "SOMETHING".into();
+
+        let expected = Err(RusterError::Of(ErrorType::MethodNotSupported));
+        let actual = executor.execute(&spec).map_err(|e| e);
+        assert_eq!(expected,actual);
+    }
+
+    #[test]
     fn test_spec_maps_url(){
         let mock = mockito::mock("GET", "/hello")
             .with_body(r#"{"hello": "world"}"#)

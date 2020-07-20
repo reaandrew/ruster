@@ -1,3 +1,5 @@
+#[derive(Debug)]
+#[derive(PartialEq)]
 pub struct Spec{
     pub url: String,
     pub method: String,
@@ -16,6 +18,8 @@ impl Default for Spec {
     }
 }
 
+#[derive(Debug)]
+#[derive(PartialEq)]
 pub struct SpecResult{
     pub success: bool,
 }

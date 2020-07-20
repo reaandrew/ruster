@@ -1,6 +1,7 @@
 use std::{error::Error, fmt};
 
 #[derive(Debug)]
+#[derive(PartialEq)]
 pub enum RusterError{
     Of(ErrorType)
 }
