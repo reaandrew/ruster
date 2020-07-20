@@ -17,7 +17,6 @@ impl SpecFileAdapter{
         let docs = YamlLoader::load_from_str(&contents).expect("Could not load file");
         //TODO: Test for no docs
         let doc = &docs[0];
-        println!("returning spec");
         return Ok(models::Spec{
             url: String::from(doc["url"].as_str().unwrap()),
             method: String::from(match doc["method"].as_str(){
