@@ -6,6 +6,7 @@ mod factories;
 mod executors;
 mod app;
 mod core;
+mod errors;
   
 use self::app::App; 
 
