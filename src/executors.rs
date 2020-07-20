@@ -26,8 +26,9 @@ impl SpecExecutor for HttpSpecExecutor{
             },
             "POST" => {
                 let client = reqwest::blocking::Client::new();
-                let _ = client.post(&spec.url)
-                    .send();
+                let response = client.post(&spec.url)
+                    .send()?;
+                result.data = response.text()?;
             }
             _ => {
                 println!("Returning the expected error");
@@ -61,6 +62,21 @@ mod tests{
         let executor = HttpSpecExecutor{};
         let mut spec: models::Spec = Default::default();
         spec.method = "GET".into();
+        spec.url = [mockito::server_url(), "/hello".to_string()].join("");
+        let spec_result = executor.execute(&spec).unwrap();
+        mock.assert();
+        assert_eq!(spec_result.data, expected_body);
+    }
+
+    #[test]
+    fn test_spec_executor_execute_returns_spec_result_body_for_post(){
+        let expected_body = "boo";
+        let mock = mockito::mock("POST", "/hello")
+            .with_body(expected_body)
+            .create();
+        let executor = HttpSpecExecutor{};
+        let mut spec: models::Spec = Default::default();
+        spec.method = "POST".into();
         spec.url = [mockito::server_url(), "/hello".to_string()].join("");
         let spec_result = executor.execute(&spec).unwrap();
         mock.assert();
