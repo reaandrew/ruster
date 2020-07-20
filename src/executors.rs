@@ -1,5 +1,6 @@
 use super::models;
 use super::core::{Result};
+use super::errors::{RusterError, ErrorType};
 use std::collections::HashMap;
 
 #[cfg_attr(test, mockall::automock)]
@@ -17,15 +18,18 @@ impl SpecExecutor for HttpSpecExecutor{
     fn execute(&self, spec: &models::Spec) -> Result<models::SpecResult>{
         match spec.method.to_uppercase().as_ref(){
             "GET" => {
-                let resp = reqwest::blocking::get(&spec.url)?
+                let _ = reqwest::blocking::get(&spec.url)?
                     .json::<HashMap<String, String>>()?;
             },
             "POST" => {
                 let client = reqwest::blocking::Client::new();
-                let resp = client.post(&spec.url)
+                let _ = client.post(&spec.url)
                     .send();
             }
-            _ => ()
+            _ => {
+                println!("Returning the expected error");
+                return Err(RusterError::Of(ErrorType::MethodNotSupported))
+            } 
         }
         Ok(models::SpecResult{
             success: true,

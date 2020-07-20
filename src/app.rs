@@ -2,6 +2,7 @@ use super::models;
 use super::executors;
 use super::factories;
 use super::finders;
+use super::errors::{RusterError};
 use super::core::{Result};
 
 pub trait App{
@@ -22,16 +23,27 @@ impl<'a,
         println!("app finding specs");
 
         let specs = self.spec_finder.find()?;
+        let mut error: Option<RusterError> = None;
         specs.iter().for_each(|spec| {
-            let executor = self.executor_factory.create(spec);
-            match executor{
-                Ok(executor) => {
-                    let _ = executor.execute(spec);
-                },
-                _ => ()
+            if error.is_none(){
+                let executor = self.executor_factory.create(spec);
+                match executor{
+                    Ok(executor) => {
+                        match executor.execute(spec){
+                            Ok(_) => (),
+                            Err(e) => {
+                                error = Some(e)
+                            }
+                        }
+                    },
+                    _ => ()
+                }
             }
         });
-        return Ok(specs.len() as i32);
+        match error{
+            None => Ok(1),
+            Some(e) => Err(e)
+        }
     }
 }
 
