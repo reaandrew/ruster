@@ -1,3 +1,5 @@
+use std::{fmt};
+
 #[derive(Debug)]
 #[derive(PartialEq)]
 pub struct Spec{
@@ -22,6 +24,14 @@ impl Default for Spec {
 #[derive(PartialEq)]
 pub struct SpecResult{
     pub success: bool,
+    pub data: String,
+}
+// Implement std::fmt::Display for AppError
+impl fmt::Display for SpecResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Success: {}
+Data: {}",self.success, self.data)
+    }
 }
 
 #[derive(Debug)]

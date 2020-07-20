@@ -1,7 +1,6 @@
 use super::models;
 use super::core::{Result};
 use super::errors::{RusterError, ErrorType};
-use std::collections::HashMap;
 
 #[cfg_attr(test, mockall::automock)]
 pub trait SpecExecutor{
@@ -16,10 +15,14 @@ pub struct HttpSpecExecutor{
 
 impl SpecExecutor for HttpSpecExecutor{
     fn execute(&self, spec: &models::Spec) -> Result<models::SpecResult>{
+        let mut result = models::SpecResult{
+            success: true,
+            data: String::from(""),
+        };
         match spec.method.to_uppercase().as_ref(){
             "GET" => {
-                let _ = reqwest::blocking::get(&spec.url)?
-                    .json::<HashMap<String, String>>()?;
+                let response = reqwest::blocking::get(&spec.url)?;
+                result.data = response.text()?;
             },
             "POST" => {
                 let client = reqwest::blocking::Client::new();
@@ -31,9 +34,7 @@ impl SpecExecutor for HttpSpecExecutor{
                 return Err(RusterError::Of(ErrorType::MethodNotSupported))
             } 
         }
-        Ok(models::SpecResult{
-            success: true,
-        })
+        Ok(result)
     }
     fn supported_spec_types(&self) -> Vec<models::SpecType>{
         return vec![
@@ -50,6 +51,21 @@ mod tests{
     #[cfg(test)]
     use super::*;
 
+
+    #[test]
+    fn test_spec_executor_execute_returns_spec_result_body_for_get(){
+        let expected_body = "boo";
+        let mock = mockito::mock("GET", "/hello")
+            .with_body(expected_body)
+            .create();
+        let executor = HttpSpecExecutor{};
+        let mut spec: models::Spec = Default::default();
+        spec.method = "GET".into();
+        spec.url = [mockito::server_url(), "/hello".to_string()].join("");
+        let spec_result = executor.execute(&spec).unwrap();
+        mock.assert();
+        assert_eq!(spec_result.data, expected_body);
+    }
 
     #[test]
     fn test_spec_executor_execute_returns_method_not_supported(){
@@ -93,6 +109,7 @@ mod tests{
         &mock_spec_executor.expect_execute()
             .returning(|_| Ok(models::SpecResult{
                 success: true,
+                data: String::from(""),
             }));
 
         let mut spec: models::Spec = Default::default();
@@ -113,6 +130,7 @@ mod tests{
         &mock_spec_executor.expect_execute()
             .returning(|_| Ok(models::SpecResult{
                 success: true,
+                data: String::from(""),
             }));
 
         let mut spec: models::Spec = Default::default();

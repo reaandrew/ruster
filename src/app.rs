@@ -55,6 +55,7 @@ impl executors::SpecExecutor for FakeExecutor{
     fn execute(&self, _: &models::Spec) -> Result<models::SpecResult>{
         Ok(models::SpecResult{
             success: true,
+            data: String::from(""),
         })
     }
     fn supported_spec_types(&self) -> Vec<models::SpecType>{
@@ -86,6 +87,7 @@ mod tests{
         &mock_spec_executor.expect_execute()
             .returning(|_| Ok(models::SpecResult{
                 success: true,
+                data: String::from(""),
             }));
 
         //TODO: Figure out how to create and pass a MockSpecExecutor instead of a FakeExecutor
