@@ -9,6 +9,7 @@ pub trait SpecExecutor{
     fn supported_spec_types(&self) -> Vec<models::SpecType>;
 }
 
+#[derive(Debug)]
 pub struct HttpSpecExecutor{
 
 }
@@ -31,7 +32,6 @@ impl SpecExecutor for HttpSpecExecutor{
                 result.data = response.text()?;
             }
             _ => {
-                println!("Returning the expected error");
                 return Err(RusterError::Of(ErrorType::MethodNotSupported))
             } 
         }

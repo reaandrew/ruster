@@ -6,7 +6,7 @@ use super::errors::{RusterError};
 use super::core::{Result};
 
 pub trait App{
-    fn execute(&self) -> Result<i32>;
+    fn execute(&self) -> Result<models::ExecutionResult>;
 }
 
 pub struct DefaultApp<'a, 
@@ -19,9 +19,10 @@ pub struct DefaultApp<'a,
 impl<'a,
     TFinder:finders::SpecFinder,
     TExecutorFactory:factories::ExecutorFactory> App for DefaultApp<'a,TFinder, TExecutorFactory>{
-    fn execute(&self) -> Result<i32>{
-        println!("app finding specs");
-
+    fn execute(&self) -> Result<models::ExecutionResult>{
+        let mut result = models::ExecutionResult{
+            success: true,
+        };
         let specs = self.spec_finder.find()?;
         let mut error: Option<RusterError> = None;
         specs.iter().for_each(|spec| {
@@ -32,6 +33,7 @@ impl<'a,
                         match executor.execute(spec){
                             Ok(_) => (),
                             Err(e) => {
+                                result.success = false;
                                 error = Some(e)
                             }
                         }
@@ -41,7 +43,7 @@ impl<'a,
             }
         });
         match error{
-            None => Ok(1),
+            None => Ok(result),
             Some(e) => Err(e)
         }
     }
@@ -72,7 +74,7 @@ mod tests{
     use super::*;
 
     #[test]
-    fn test_app_returns_number_of_specs_found() -> Result<()> {
+    fn test_default_app_returns_test_result(){
         let mut mock_spec_finder = finders::MockSpecFinder::new();
         &mock_spec_finder.expect_find()
             .times(1)
@@ -99,8 +101,42 @@ mod tests{
             executor_factory: &mock_executor_factory,
         };
 
-        assert_eq!(1, app.execute()?);
-        Ok(())
+        let result = app.execute().unwrap();
+
+        assert_eq!(true, result.success);
+    }
+
+    #[test]
+    fn test_app_returns_number_of_specs_found(){
+        let mut mock_spec_finder = finders::MockSpecFinder::new();
+        &mock_spec_finder.expect_find()
+            .times(1)
+            .returning(| | Ok(vec![models::Spec{
+                url: String::from(""),
+                data: String::from(""),
+                method: String::from(""),
+                spec_type: models::SpecType::HTTP,
+            }]));
+
+        let mut mock_spec_executor = executors::MockSpecExecutor::new();
+        &mock_spec_executor.expect_execute()
+            .returning(|_| Ok(models::SpecResult{
+                success: true,
+                data: String::from(""),
+            }));
+
+        //TODO: Figure out how to create and pass a MockSpecExecutor instead of a FakeExecutor
+        let mut mock_executor_factory = factories::MockExecutorFactory::new();
+        &mock_executor_factory.expect_create()
+            .returning(|_| Ok(Box::new(FakeExecutor{})));
+        let app = DefaultApp{
+            spec_finder: &mock_spec_finder,
+            executor_factory: &mock_executor_factory,
+        };
+
+        let result = app.execute().unwrap();
+
+        assert_eq!(true, result.success);
     }
 
 }

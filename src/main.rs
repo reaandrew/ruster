@@ -27,7 +27,7 @@ fn main() {
         Ok(app) => {
             match app.execute(){
                 Ok(result) => {
-                    println!("{}", result);
+                    println!("Success: {}", result.success);
                 },
                 Err(e) => {
                     match e {

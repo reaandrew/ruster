@@ -29,10 +29,8 @@ pub struct FileSpecFinder{
 
 impl SpecFinder for FileSpecFinder{
     fn find(&self) -> core::Result<Vec<models::Spec>>{
-        println!("Finding specs");
         let adapter = adapters::SpecFileAdapter{};
         let mut result : Vec<models::Spec> = vec![];
-        println!("Self Path is {:?}", &self.path);
 
         match fs::read_dir(&self.path){
             Ok(paths) => {

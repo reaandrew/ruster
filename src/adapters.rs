@@ -12,7 +12,6 @@ pub struct SpecFileAdapter{
 
 impl SpecFileAdapter{
     pub fn adapt(&self, path:String) -> Result<models::Spec>{
-        println!("adapting file");
         let contents = read_to_string(path).expect("Unable to read file");
         let docs = YamlLoader::load_from_str(&contents).expect("Could not load file");
         //TODO: Test for no docs
