@@ -4,6 +4,22 @@
 
 Request something from something by sending something receiving something and asserting something.
 
+## Building
+
+1. First you need to initiate and update thea `rusty_v8` submodule.  This will take a minute or three.
+
+```
+git submodule update --init --recursive
+```
+
+2. For the next bit I followed the `rusty_v8` instructions and installed [https://github.com/mozilla/sccache](sccache) which after the initial build (takes about 30 mins) reduces the time to seconds.
+
+```
+cargo build
+```
+
+---
+
 ## Testing
 
 If developing inside a docker container I use the following helper function which configures various docker capabilities, without `--security-opt seccomp=unconfined` it wont run:
