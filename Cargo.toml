@@ -13,3 +13,4 @@ tempfile = "3.1.0"
 uuid = { version = "0.8", features = ["serde", "v4"] }
 reqwest = { version = "0.10", features = ["blocking", "json"] }
 mockito = "0.26.0"
+rusty_v8 = { path = "rusty_v8" }
