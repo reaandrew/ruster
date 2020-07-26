@@ -20,12 +20,12 @@ fn test_file_spec_finder_finds_spec_files()-> core::Result<()>{
         method: "GET".into(),
         data: "something".into(),
     };
-    let _ = utils::create_spec_file(10, &expected, 
+    utils::create_spec_file(10, &expected, 
         |result| -> core::Result<()> {
         let finder = FileSpecFinder{path:result.directory};
         assert_eq!(10, finder.find()?.len());
         Ok(())
-    })?;
+    });
     Ok(())
 }
 

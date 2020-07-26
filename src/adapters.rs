@@ -38,13 +38,13 @@ fn test_creating_a_spec_from_file()-> Result<()>{
         method: "GET".into(),
         data: "something".into(),
     };
-    let mut result = utils::create_spec_file(10, &expected,
+    utils::create_spec_file(10, &expected,
         |mut result| -> Result<()> {
         let adapter = SpecFileAdapter{};
         let spec = adapter.adapt(result.file_path.remove(1))?;
         assert_eq!(spec.url, expected.url);
         Ok(())
-    })?;
+    });
     Ok(())
 }
 

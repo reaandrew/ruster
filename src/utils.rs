@@ -37,10 +37,9 @@ impl Default for CreateSpecFileSpec {
 
 #[cfg(test)]
 pub fn create_spec_file<T>(count:i32, spec:&CreateSpecFileSpec, callback:T)
-    -> core::Result<()> where
-    T: Fn(CreateSpecFileResult) -> core::Result<()>{
-    let dir = Builder::new().prefix("ruster").tempdir()?;
-    let mut result = CreateSpecFileResult{
+    where T: Fn(CreateSpecFileResult) -> core::Result<()>{
+    let dir = Builder::new().prefix("ruster").tempdir().unwrap();
+    let mut something = CreateSpecFileResult{
         directory: dir.path().display().to_string(),
         file_path: vec![],
     };
@@ -48,15 +47,14 @@ pub fn create_spec_file<T>(count:i32, spec:&CreateSpecFileSpec, callback:T)
         let my_uuid = Uuid::new_v4();
         let file_path = dir.path().join(format!("spec_{uuid}.yml",
                 uuid=my_uuid));
-        let mut tmp_file = File::create(&file_path)?;
+        let mut tmp_file = File::create(&file_path).unwrap();
         writeln!(tmp_file, "---
     url: {}
     method: {}
     data: |
         {}
-", spec.url, spec.method, spec.data)?;
-        result.file_path.push(file_path.display().to_string())
+", spec.url, spec.method, spec.data).unwrap();
+        something.file_path.push(file_path.display().to_string())
     }
-    callback(result);
-    Ok(())
+    callback(something).expect("Something went wrong invoking callback");
 }
