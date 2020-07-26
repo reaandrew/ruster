@@ -3,9 +3,7 @@ use std::fs;
 use super::core;
 use super::models;
 use super::adapters;
-use super::errors::{RusterError, ErrorType};
-
-#[cfg(test)]
+use super::errors::{RusterError, ErrorType}; #[cfg(test)]
 use super::utils;
 
 #[cfg_attr(test, mockall::automock)]

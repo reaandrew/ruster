@@ -28,6 +28,7 @@ impl SpecExecutor for HttpSpecExecutor{
             "POST" => {
                 let client = reqwest::blocking::Client::new();
                 let response = client.post(&spec.url)
+                    .body((&spec.data).to_string())
                     .send()?;
                 result.data = response.text()?;
             }
@@ -52,6 +53,22 @@ mod tests{
     #[cfg(test)]
     use super::*;
 
+    #[test]
+    fn test_spec_executor_execute_returns_spec_result_for_data(){
+        let expected_body = "boo";
+        let mock = mockito::mock("POST", "/hello")
+            .match_body("fubar")
+            .with_body(expected_body)
+            .create();
+        let executor = HttpSpecExecutor{};
+        let mut spec: models::Spec = Default::default();
+        spec.method = "POST".into();
+        spec.url = [mockito::server_url(), "/hello".to_string()].join("");
+        spec.data = "fubar".into();
+        let spec_result = executor.execute(&spec).unwrap();
+        mock.assert();
+        assert_eq!(spec_result.data, expected_body);
+    }
 
     #[test]
     fn test_spec_executor_execute_returns_spec_result_body_for_get(){
