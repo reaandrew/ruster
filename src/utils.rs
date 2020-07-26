@@ -18,8 +18,26 @@ pub struct CreateSpecFileResult{
 }
 
 #[cfg(test)]
-pub fn create_spec_file<T>(count:i32, callback:T) 
-    -> core::Result<()> where 
+pub struct CreateSpecFileSpec{
+    pub url: String,
+    pub method: String,
+    pub data: String
+}
+
+#[cfg(test)]
+impl Default for CreateSpecFileSpec {
+    fn default() -> Self { 
+        return CreateSpecFileSpec{
+            url: "".into(),
+            method: "GET".into(),
+            data: "".into(),
+        }
+    }
+}
+
+#[cfg(test)]
+pub fn create_spec_file<T>(count:i32, spec:&CreateSpecFileSpec, callback:T)
+    -> core::Result<()> where
     T: Fn(CreateSpecFileResult) -> core::Result<()>{
     let dir = Builder::new().prefix("ruster").tempdir()?;
     let mut result = CreateSpecFileResult{
@@ -32,10 +50,13 @@ pub fn create_spec_file<T>(count:i32, callback:T)
                 uuid=my_uuid));
         let mut tmp_file = File::create(&file_path)?;
         writeln!(tmp_file, "---
-    url: \"http://localhost/path\"
-")?;
+    url: {}
+    method: {}
+    data: |
+        {}
+", spec.url, spec.method, spec.data)?;
         result.file_path.push(file_path.display().to_string())
     }
-    callback(result)?;
+    callback(result);
     Ok(())
 }

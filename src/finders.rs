@@ -1,8 +1,8 @@
 use std::fs;
 
+use super::core;
 use super::models;
 use super::adapters;
-use super::core;
 use super::errors::{RusterError, ErrorType};
 
 #[cfg(test)]
@@ -15,7 +15,13 @@ pub trait SpecFinder{
 
 #[test]
 fn test_file_spec_finder_finds_spec_files()-> core::Result<()>{
-    utils::create_spec_file(10, |result| -> core::Result<()> {
+    let expected = utils::CreateSpecFileSpec{
+        url: "http://localhost/path".into(),
+        method: "GET".into(),
+        data: "something".into(),
+    };
+    let _ = utils::create_spec_file(10, &expected, 
+        |result| -> core::Result<()> {
         let finder = FileSpecFinder{path:result.directory};
         assert_eq!(10, finder.find()?.len());
         Ok(())

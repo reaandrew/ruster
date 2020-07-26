@@ -33,10 +33,16 @@ impl SpecFileAdapter{
 
 #[test]
 fn test_creating_a_spec_from_file()-> Result<()>{
-    utils::create_spec_file(10, |mut result| -> Result<()> {
+    let expected = utils::CreateSpecFileSpec{
+        url: "http://localhost/path".into(),
+        method: "GET".into(),
+        data: "something".into(),
+    };
+    let mut result = utils::create_spec_file(10, &expected,
+        |mut result| -> Result<()> {
         let adapter = SpecFileAdapter{};
         let spec = adapter.adapt(result.file_path.remove(1))?;
-        assert_eq!(spec.url,"http://localhost/path");
+        assert_eq!(spec.url, expected.url);
         Ok(())
     })?;
     Ok(())
