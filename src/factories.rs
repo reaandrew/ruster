@@ -1,5 +1,6 @@
 use super::models;
 use super::executors;
+use super::decorators::{ScriptExecutor};
 use super::core::{Result};
 use super::app;
 use super::finders;
@@ -15,7 +16,10 @@ pub struct DefaultExecutorFactory{
 
 impl ExecutorFactory for DefaultExecutorFactory {
     fn create(&self, _: &models::Spec) -> Result<Box<dyn executors::SpecExecutor>>{
-        Ok(Box::new(executors::HttpSpecExecutor{}))
+
+        Ok(Box::new(ScriptExecutor{
+            executor:Box::new(executors::HttpSpecExecutor{})
+        }))
     }
 }
 
