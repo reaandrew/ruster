@@ -21,7 +21,8 @@ pub struct CreateSpecFileResult{
 pub struct CreateSpecFileSpec{
     pub url: String,
     pub method: String,
-    pub data: String
+    pub data: String,
+    pub before: String,
 }
 
 #[cfg(test)]
@@ -31,6 +32,7 @@ impl Default for CreateSpecFileSpec {
             url: "".into(),
             method: "GET".into(),
             data: "".into(),
+            before: "".into(),
         }
     }
 }
@@ -52,7 +54,9 @@ pub fn create_spec_file<T>(count:i32, spec:&CreateSpecFileSpec, callback:T)
     url: {}
     method: {}
     data: |
-        {}", spec.url, spec.method, spec.data).unwrap();
+        {}
+    before: |
+        {}", spec.url, spec.method, spec.data,spec.before).unwrap();
         something.file_path.push(file_path.display().to_string())
     }
     callback(something).expect("Something went wrong invoking callback");

@@ -13,11 +13,11 @@ pub trait SpecFinder{
 
 #[test]
 fn test_file_spec_finder_finds_spec_files()-> core::Result<()>{
-    let expected = utils::CreateSpecFileSpec{
-        url: "http://localhost/path".into(),
-        method: "GET".into(),
-        data: "something".into(),
-    };
+    let mut expected: utils::CreateSpecFileSpec = Default::default();
+    expected.url = "http://localhost/path".into();
+    expected.method = "GET".into();
+    expected.data = "something".into();
+
     utils::create_spec_file(10, &expected, 
         |result| -> core::Result<()> {
         let finder = FileSpecFinder{path:result.directory};

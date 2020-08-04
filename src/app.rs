@@ -78,12 +78,10 @@ mod tests{
         let mut mock_spec_finder = finders::MockSpecFinder::new();
         &mock_spec_finder.expect_find()
             .times(1)
-            .returning(| | Ok(vec![models::Spec{
-                url: String::from(""),
-                data: String::from(""),
-                method: String::from(""),
-                spec_type: models::SpecType::HTTP,
-            }]));
+            .returning(| | {
+                 let expected: models::Spec = Default::default();
+                 Ok(vec![expected])
+            });
 
         let mut mock_spec_executor = executors::MockSpecExecutor::new();
         &mock_spec_executor.expect_execute()
@@ -111,12 +109,10 @@ mod tests{
         let mut mock_spec_finder = finders::MockSpecFinder::new();
         &mock_spec_finder.expect_find()
             .times(1)
-            .returning(| | Ok(vec![models::Spec{
-                url: String::from(""),
-                data: String::from(""),
-                method: String::from(""),
-                spec_type: models::SpecType::HTTP,
-            }]));
+            .returning(| | {
+                 let expected: models::Spec = Default::default();
+                 Ok(vec![expected])
+            });
 
         let mut mock_spec_executor = executors::MockSpecExecutor::new();
         &mock_spec_executor.expect_execute()

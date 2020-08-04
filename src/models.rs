@@ -6,6 +6,7 @@ pub struct Spec{
     pub url: String,
     pub method: String,
     pub data: String,
+    pub before: String,
     pub spec_type: SpecType,
 }
 
@@ -15,6 +16,7 @@ impl Default for Spec {
             url: "".into(),
             method: "GET".into(),
             data: "".into(),
+            before: "".into(),
             spec_type: SpecType::HTTP,
         }
     }

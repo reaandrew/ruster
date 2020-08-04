@@ -26,6 +26,10 @@ impl SpecFileAdapter{
                 Some(data) => String::from(data),
                 None       => String::from("")
             }),
+            before: String::from(match doc["before"].as_str(){
+                Some(before) => String::from(before),
+                None       => String::from("")
+            }),
             spec_type: models::SpecType::HTTP,
         });
     }
@@ -37,6 +41,7 @@ fn test_creating_a_spec_from_file()-> Result<()>{
         url: "http://localhost/path".into(),
         method: "GET".into(),
         data: "something\n".into(),
+        before: "console.log('got it');\n".into(),
     };
     utils::create_spec_file(10, &expected,
         |mut result| -> Result<()> {
@@ -45,6 +50,7 @@ fn test_creating_a_spec_from_file()-> Result<()>{
         assert_eq!(spec.url, expected.url);
         assert_eq!(spec.method, expected.method);
         assert_eq!(spec.data, expected.data);
+        assert_eq!(spec.before, expected.before);
         Ok(())
     });
     Ok(())

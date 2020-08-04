@@ -53,14 +53,13 @@ mod tests{
 
     #[test]
     fn test_executor_factory_return_http_executor() -> Result<()>{
-        let spec = &models::Spec{
-            url: String::from("http://localhost:8000"),
-            data: String::from("bla"),
-            method: String::from("GET"),
-            spec_type: models::SpecType::HTTP,
-        };
+        let mut spec: models::Spec = Default::default();
+        spec.url = String::from("http://localhost:8000");
+        spec.data = String::from("bla");
+        spec.method = String::from("GET");
+
         let factory = DefaultExecutorFactory{};
-        let executor = factory.create(spec)?;
+        let executor = factory.create(&spec)?;
 
         let supported_types = executor.supported_spec_types();
         assert_eq!(supported_types.len(), 1);
