@@ -18,7 +18,7 @@ impl ExecutorFactory for DefaultExecutorFactory {
     fn create(&self, _: &models::Spec) -> Result<Box<dyn executors::SpecExecutor>>{
 
         Ok(Box::new(ScriptExecutor{
-            executor:Box::new(executors::HttpSpecExecutor{})
+            executor: &executors::HttpSpecExecutor{}
         }))
     }
 }

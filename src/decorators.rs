@@ -2,11 +2,11 @@ use super::core::{Result};
 use super::models;
 use super::executors::{SpecExecutor};
 
-pub struct ScriptExecutor{
-    pub executor: Box<dyn SpecExecutor>
+pub struct ScriptExecutor<'a, TExecutor:SpecExecutor>{
+    pub executor: &'a TExecutor,
 }
 
-impl SpecExecutor for ScriptExecutor{
+impl <'a, TExecutor:SpecExecutor> SpecExecutor for ScriptExecutor<'a, TExecutor>{
     fn execute(&self, spec: &models::Spec) -> Result<models::SpecResult>{
         self.executor.execute(spec)
     }
