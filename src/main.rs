@@ -70,13 +70,16 @@ fn main() {
     };
 }
 
+
+//This helps me get over the wtf is going on 
+//  (in a nice way) learning V8 with rust.
 mod tests{
 
     #[cfg(test)]
     use rusty_v8 as v8;
 
     #[cfg(test)]
-    use std::convert::{Into};
+    use std::convert::{Into, TryFrom};
     #[cfg(test)]
     use std::sync::Mutex;
     #[cfg(test)]
@@ -84,6 +87,8 @@ mod tests{
 
     #[cfg(test)]
     use v8::inspector::*;
+    use rusty_v8::Handle;
+    use std::ptr::null;
 
     #[cfg(test)]
     struct Client {
@@ -169,12 +174,33 @@ mod tests{
     #[cfg(test)]
     fn fortytwo_callback(
         scope: &mut v8::HandleScope,
-        _: v8::FunctionCallbackArguments,
+        args: v8::FunctionCallbackArguments,
         mut rv: v8::ReturnValue,
     ) {
         {
             let s = scope.get_slot::<X>().unwrap();
             println!("{:?}", s.things);
+        }
+        {
+            let context = v8::Context::new(scope);
+            let global = context.global(scope);
+            let recv: v8::Local<v8::Value> = global.into();
+            let value: v8::Local<v8::Value> = args.get(1);
+            println!("HASH: {}", value.to_string(scope).unwrap().to_rust_string_lossy(scope));
+            assert!(args.get(1).is_function());
+            let function = v8::Local::<v8::Function>::try_from(value).unwrap();
+
+            let message_str = v8::String::new(scope, "mishap").unwrap();
+            let exception = v8::Exception::type_error(scope, message_str);
+
+            let obj = v8::Object::new(scope);
+            let int_key = v8::String::new(scope, "int_key").unwrap();
+            let int_value = v8::Integer::new(scope, 42);
+            obj.set(scope, int_key.into(), int_value.into());
+
+            let undefined_value: v8::Local<v8::Value> = v8::undefined(scope).into();
+            let response_value: v8::Local<v8::Value> = obj.into();
+            function.call(scope, recv, &[undefined_value, response_value]);
         }
         rv.set(v8::Integer::new(scope, 42).into());
     }
@@ -238,10 +264,13 @@ mod tests{
 
             let source = r#"
           {
-            let inner = () => {
-                console.log('something');
+            let inner = (err, response) => {
+                console.log('something to do ta da talula', err, response);
             };
-            g.request.f(inner);
+            g.request.f({
+                method: 'GET'
+            }, inner);
+            console.log('BOOM');
             const d = Object.getOwnPropertyDescriptor(globalThis, "g");
             console.log('Settings for d', d);
             console.log('request', g.request);
@@ -249,9 +278,11 @@ mod tests{
             [d.configurable, d.enumerable, d.writable].toString()
           }
         "#;
-        let actual = eval(scope, source).unwrap();
-        let expected = v8::String::new(scope, "true,false,true").unwrap();
+        let tc = &mut v8::TryCatch::new(scope);
+        let actual = eval(tc, source).unwrap();
+        let expected = v8::String::new(tc, "true,false,true").unwrap();
         assert!(expected.strict_equals(actual));
+            /*
         let actual = eval(scope, "g.request.f()").unwrap();
         let expected = v8::Integer::new(scope, 42);
         assert!(expected.strict_equals(actual));
@@ -268,7 +299,10 @@ mod tests{
         assert!(result.is_some()); 
         let expected = v8::String::new(tc, "false,false,false").unwrap();
         assert!(expected.strict_equals(result.unwrap()));
+
+             */
         println!("{:?}",client.messages);
+
         }
     }
 }

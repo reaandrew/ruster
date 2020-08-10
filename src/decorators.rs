@@ -6,7 +6,16 @@ pub struct ScriptExecutor<'a, TExecutor:SpecExecutor>{
     pub executor: &'a TExecutor,
 }
 
+impl <'a, TExecutor:SpecExecutor> ScriptExecutor<'a, TExecutor>{
+
+    fn evalulate_before(&self, value: String) {
+
+    }
+
+}
+
 impl <'a, TExecutor:SpecExecutor> SpecExecutor for ScriptExecutor<'a, TExecutor>{
+
     fn execute(&self, spec: &models::Spec) -> Result<models::SpecResult>{
         self.executor.execute(spec)
     }
